@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>她自己的天堂</title>
+<style>
+  :root{
+    --bg:#eef3fa; --panel:#fff; --fg:#16202e; --muted:#6b7c93; --line:#dbe4f0; --field:#f6f9fe;
+    --accent:#2f6feb; --accent2:#63a4ff; --soft:#e8f0ff; --ok:#1f9d6b; --warn:#c2410c; --gold:#c08a3e;
+    --sh:0 1px 2px rgba(22,45,90,.06), 0 12px 28px -16px rgba(22,45,90,.22);
+  }
+  [data-theme="dark"]{
+    --bg:#0b1119; --panel:#111a26; --fg:#e6eefb; --muted:#8ea2bd; --line:#1e2b3d; --field:#0f1722;
+    --accent:#64a0ff; --accent2:#3d7ce0; --soft:#14233a; --ok:#4ade80; --warn:#fb923c; --gold:#d8a866;
+    --sh:0 1px 2px rgba(0,0,0,.5), 0 16px 36px -22px rgba(0,0,0,.9);
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.65 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:26px 20px 90px}
+  .hero{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;margin-bottom:16px}
+  .hero h1{margin:0 0 4px;font-size:21px}
+  .hero p{margin:0;color:var(--muted);font-size:13px}
+  .hero .sp{flex:1}
+  .tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:5px;margin-bottom:18px;width:fit-content;box-shadow:var(--sh)}
+  .tab{border:0;background:transparent;color:var(--muted);padding:8px 20px;border-radius:9px;
+    font:inherit;cursor:pointer;transition:.15s}
+  .tab:hover{color:var(--fg)}
+  .tab.on{background:var(--accent);color:#fff}
+  button{font:inherit;cursor:pointer;border-radius:10px;padding:8px 14px;border:1px solid var(--line);
+    background:var(--panel);color:var(--fg);transition:.15s}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.mini{padding:4px 10px;font-size:12px;border-radius:8px}
+  button.ghost{background:transparent}
+
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh)}
+  .card .top{display:flex;gap:12px;align-items:center}
+  .av{width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--accent);
+    display:grid;place-items:center;font-weight:600;font-size:16px;flex:none}
+  .who b{display:block;font-size:15px}
+  .who span{font-size:11.5px;color:var(--muted);font-family:ui-monospace,Consolas,monospace}
+  .chip{font-size:11.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .chip.on{color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .chip.warn{color:var(--warn);border-color:var(--warn)}
+  .rows{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .row{display:flex;gap:10px;align-items:baseline;padding:5px 0;font-size:12.5px}
+  .row .k{flex:none;width:64px;color:var(--muted)}
+  .row .v{flex:1;min-width:0}
+  .thread{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dotted var(--line)}
+  .thread:last-child{border-bottom:0}
+  .thread .t{flex:1;min-width:0;font-size:12.5px}
+  .thread .when{font-size:11px;color:var(--muted);flex:none}
+  .muted{color:var(--muted)}
+
+  .panelcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);
+    padding:16px 18px;margin-bottom:14px}
+  .panelcard h4{margin:0 0 4px;font-size:14px}
+  .panelcard .hint{margin:0 0 14px;font-size:12px;color:var(--muted)}
+  .srow{display:grid;grid-template-columns:1fr 150px;gap:14px;align-items:center;padding:9px 0;
+    border-bottom:1px dashed var(--line)}
+  .srow:last-child{border-bottom:0}
+  .srow .l b{font-size:13px}
+  .srow .l span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .srow input[type=number]{width:100%;padding:8px 10px;border-radius:9px;border:1px solid var(--line);
+    background:var(--field);color:var(--fg);font:inherit;text-align:right;outline:none}
+  .switch{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+  .switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line);
+    position:relative;cursor:pointer;transition:.18s}
+  .switch input:checked{background:var(--accent)}
+  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+    background:#fff;transition:.18s}
+  .switch input:checked::after{left:21px}
+  .switch span{font-size:12px;color:var(--muted);min-width:24px}
+  .savebar{display:flex;gap:10px;align-items:center;margin-top:8px}
+  .empty{color:var(--muted);font-size:13px;padding:26px;text-align:center}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:var(--panel);
+    border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 16px;border-radius:10px;
+    box-shadow:var(--sh);opacity:0;pointer-events:none;transition:.2s;font-size:13px;z-index:80}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{border-left-color:var(--warn)}
+  .banner{display:none;margin-bottom:14px;padding:10px 14px;border-radius:10px;background:var(--soft);
+    color:var(--accent);font-size:13px}
+  .banner.show{display:block}
+  @media(max-width:640px){.wrap{padding:18px 14px 80px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>她自己的天堂</h1>
+      <p>把温柔拆成能做的事：知道你现在累不累、不连着追问、不纠正小事、收场前留半句、记着你的语气。</p>
+    </div>
+    <div class="sp"></div>
+    <div><button class="ghost" id="btn-refresh">刷新</button></div>
+  </div>
+
+  <div class="banner" id="banner">面板桥接还没就绪，正在重试…</div>
+
+  <div class="tabs">
+    <button class="tab on" data-page="overview">概览</button>
+    <button class="tab" data-page="settings">设置</button>
+  </div>
+
+  <div id="page-overview">
+    <div class="grid" id="people"></div>
+    <div class="empty" id="empty" hidden>还没有记录。有人跟她说话之后，这里会出现。</div>
+  </div>
+
+  <div id="page-settings" hidden>
+    <div class="panelcard">
+      <h4>要开哪些</h4>
+      <p class="hint">每一条都是独立的，可以只留你觉得有用的。</p>
+      <div class="srow">
+        <div class="l"><b>总开关</b><span>关掉就完全不动</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-on" /><span id="s-on-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>感知他的状态</b><span>从他话里认出累 / 忙 / 难过 / 不舒服 / 开心</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-state" /><span id="s-state-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>问题预算</b><span>短时间问太多就不让再问</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-q" /><span id="s-q-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>留体面</b><span>他说错的小事不纠正</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-polite" /><span id="s-polite-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>话头</b><span>收场前把他没说完的记下来</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-thread" /><span id="s-thread-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>语气簿</b><span>记住他那天说话的语气</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-tone" /><span id="s-tone-t">开</span></label></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>慢一点</b><span>回复前停顿，不秒回</span></div>
+        <div class="switch"><label><input type="checkbox" id="s-delay" /><span id="s-delay-t">开</span></label></div>
+      </div>
+    </div>
+
+    <div class="panelcard">
+      <h4>数值</h4>
+      <p class="hint">改完点保存，立刻生效。</p>
+      <div class="srow">
+        <div class="l"><b>他的状态保持几小时</b><span>过了就失效，不一直当他累着</span></div>
+        <div><input type="number" id="s-ttl" min="0.5" max="24" step="0.5" /></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>多少分钟内最多几个问号</b><span>超过就不让再问</span></div>
+        <div><input type="number" id="s-maxq" min="0" max="6" step="1" /></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>统计窗口（分钟）</b><span>问号算多久之内的</span></div>
+        <div><input type="number" id="s-window" min="1" max="120" step="1" /></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>停顿上限（秒）</b><span>最多等这么久</span></div>
+        <div><input type="number" id="s-dmax" min="0" max="5" step="0.2" /></div>
+      </div>
+      <div class="srow">
+        <div class="l"><b>每个字加多少秒</b><span>长句子多等一点</span></div>
+        <div><input type="number" id="s-dchar" min="0" max="0.1" step="0.002" /></div>
+      </div>
+    </div>
+
+    <div class="savebar">
+      <button class="primary" id="btn-save">保存</button>
+      <button class="ghost" id="btn-reset">恢复默认</button>
+      <span class="muted" id="save-note" style="font-size:12px"></span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const API = "/astrbot_plugin_paradise";
+  let bridge = null;
+  let data = null;
+
+  const $ = (id) => document.getElementById(id);
+  const ep = (p) => String(p || "").replace(/^\/+/, "");
+
+  async function ensureBridge() {
+    if (window.AstrBotPluginPage) { bridge = window.AstrBotPluginPage; return true; }
+    const t0 = Date.now();
+    while (Date.now() - t0 < 6000) {
+      await new Promise((r) => setTimeout(r, 60));
+      if (window.AstrBotPluginPage) { bridge = window.AstrBotPluginPage; return true; }
+    }
+    return false;
+  }
+  function get(path) {
+    if (bridge && bridge.apiGet) return bridge.apiGet(ep(path));
+    return fetch("/api/plug" + API + path, { credentials: "include" }).then((r) => r.json());
+  }
+  function post(path, body) {
+    if (bridge && bridge.apiPost) return bridge.apiPost(ep(path), body);
+    return fetch("/api/plug" + API + path, {
+      method: "POST", credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {})
+    }).then((r) => r.json());
+  }
+  function toast(msg, bad) {
+    const el = $("toast");
+    el.textContent = msg;
+    el.className = "toast show" + (bad ? " error" : "");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => (el.className = "toast"), 2400);
+  }
+  const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function ago(ts) {
+    const sec = Date.now() / 1000 - Number(ts || 0);
+    if (!isFinite(sec) || sec < 0) return "";
+    if (sec < 60) return "刚刚";
+    if (sec < 3600) return Math.round(sec / 60) + " 分钟前";
+    if (sec < 86400) return Math.round(sec / 3600) + " 小时前";
+    return Math.round(sec / 86400) + " 天前";
+  }
+
+  function renderOverview() {
+    const users = (data && data.users) || [];
+    $("empty").hidden = users.length > 0;
+    $("people").innerHTML = users.map((u) => {
+      const stateChip = u.state
+        ? '<span class="chip on">' + esc(u.state) + ' · ' + u.state_age_min + ' 分钟前</span>'
+        : '<span class="chip">状态未知</span>';
+      const qChip = u.questions
+        ? '<span class="chip warn">近期 ' + u.questions + ' 个问号</span>'
+        : '<span class="chip">没在追问</span>';
+      const threads = (u.threads || []).length
+        ? u.threads.map((t) =>
+            '<div class="thread"><span class="t">' + esc(t.text) + '</span>'
+            + '<span class="when">' + ago(t.at) + '</span>'
+            + '<button class="mini" data-act="done" data-qq="' + esc(u.qq) + '" data-text="' + esc(t.text) + '">已接</button></div>'
+          ).join("")
+        : '<div class="row"><span class="v muted">没有挂着的半句</span></div>';
+      const tones = (u.tones || []).length
+        ? u.tones.slice().reverse().map((t) =>
+            '<div class="row"><span class="k">' + esc(t.tone) + '</span><span class="v">' + esc(t.text) + '</span></div>'
+          ).join("")
+        : '<div class="row"><span class="v muted">还没有语气记录</span></div>';
+      return '<div class="card">'
+        + '<div class="top"><div class="av">' + esc((u.name || u.qq).slice(0, 1)) + '</div>'
+        + '<div class="who"><b>' + esc(u.name || u.qq) + '</b><span>' + esc(u.qq) + '</span></div>'
+        + '<div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'
+        + stateChip + qChip + '</div></div>'
+        + '<div class="rows"><div class="row"><span class="k">话头</span><span class="v muted">'
+        + (u.threads || []).length + ' 条</span></div>' + threads + '</div>'
+        + '<div class="rows"><div class="row"><span class="k">语气簿</span>'
+        + '<span class="v muted">说过 ' + (u.talks || 0) + ' 次 · ' + ago(u.last_seen) + '</span></div>'
+        + tones + '</div>'
+        + '</div>';
+    }).join("");
+  }
+
+  function renderSettings(s) {
+    s = s || {};
+    const flags = [
+      ["s-on", "s-on-t", s.enabled],
+      ["s-state", "s-state-t", s.state_enabled],
+      ["s-q", "s-q-t", s.question_budget_enabled],
+      ["s-polite", "s-polite-t", s.politeness_enabled],
+      ["s-thread", "s-thread-t", s.thread_enabled],
+      ["s-tone", "s-tone-t", s.tone_memory_enabled],
+      ["s-delay", "s-delay-t", s.delay_enabled]
+    ];
+    flags.forEach(([id, tid, val]) => {
+      $(id).checked = !!val;
+      $(tid).textContent = val ? "开" : "关";
+    });
+    $("s-ttl").value = s.state_ttl_hours;
+    $("s-maxq").value = s.max_questions;
+    $("s-window").value = s.question_window_minutes;
+    $("s-dmax").value = s.delay_max_sec;
+    $("s-dchar").value = s.delay_per_char;
+  }
+
+  function collect() {
+    return {
+      enabled: $("s-on").checked,
+      state_enabled: $("s-state").checked,
+      question_budget_enabled: $("s-q").checked,
+      politeness_enabled: $("s-polite").checked,
+      thread_enabled: $("s-thread").checked,
+      tone_memory_enabled: $("s-tone").checked,
+      delay_enabled: $("s-delay").checked,
+      state_ttl_hours: Number($("s-ttl").value || 3),
+      max_questions: Number($("s-maxq").value || 2),
+      question_window_minutes: Number($("s-window").value || 15),
+      delay_max_sec: Number($("s-dmax").value || 1.6),
+      delay_per_char: Number($("s-dchar").value || 0.012)
+    };
+  }
+
+  async function load() {
+    try {
+      const res = await get("overview");
+      if (!res || !res.ok) throw new Error("读取失败");
+      data = res;
+      renderOverview();
+      renderSettings(res.settings);
+    } catch (e) {
+      $("banner").classList.add("show");
+      $("banner").textContent = "加载失败：" + (e && e.message ? e.message : e);
+    }
+  }
+
+  $("people").addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    if (btn.dataset.act === "done") {
+      const res = await post("thread/done", { qq: btn.dataset.qq, text: btn.dataset.text });
+      if (res && res.ok) { data = res.overview; renderOverview(); toast("这条接上了"); }
+      else toast("操作失败", true);
+    }
+  });
+
+  const toggles = [["s-on", "s-on-t"], ["s-state", "s-state-t"], ["s-q", "s-q-t"],
+                   ["s-polite", "s-polite-t"], ["s-thread", "s-thread-t"],
+                   ["s-tone", "s-tone-t"], ["s-delay", "s-delay-t"]];
+  toggles.forEach(([id, tid]) => {
+    $(id).onchange = () => { $(tid).textContent = $(id).checked ? "开" : "关"; };
+  });
+
+  $("btn-save").onclick = async () => {
+    try {
+      const res = await post("settings/save", collect());
+      if (!res || !res.ok) throw new Error("保存失败");
+      renderSettings(res.settings);
+      $("save-note").textContent = "已保存 · " + new Date().toLocaleTimeString();
+      toast("已保存");
+    } catch (e) { toast(e.message || "保存失败", true); }
+  };
+  $("btn-reset").onclick = async () => {
+    if (!confirm("恢复默认设置？")) return;
+    const res = await post("settings/save", {
+      enabled: true, state_enabled: true, question_budget_enabled: true,
+      politeness_enabled: true, thread_enabled: true, tone_memory_enabled: true,
+      delay_enabled: true, state_ttl_hours: 3, max_questions: 2,
+      question_window_minutes: 15, delay_max_sec: 1.6, delay_per_char: 0.012
+    });
+    if (res && res.ok) { renderSettings(res.settings); toast("已恢复默认"); }
+    else toast("恢复失败", true);
+  };
+  $("btn-refresh").onclick = load;
+
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.onclick = () => {
+      document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === tab));
+      const which = tab.dataset.page;
+      $("page-overview").hidden = which !== "overview";
+      $("page-settings").hidden = which !== "settings";
+    };
+  });
+
+  (async () => {
+    const ok = await ensureBridge();
+    if (!ok) $("banner").classList.add("show");
+    if (bridge && bridge.ready) {
+      try {
+        await bridge.ready();
+        const ctx = bridge.getContext && bridge.getContext();
+        if (ctx && typeof ctx.isDark === "boolean") {
+          document.documentElement.setAttribute("data-theme", ctx.isDark ? "dark" : "light");
+        }
+      } catch (e) {}
+    }
+    await load();
+    setInterval(load, 30000);
+  })();
+})();
+</script>
+</body>
+</html>

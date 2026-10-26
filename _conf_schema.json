@@ -1,0 +1,1 @@
+﻿{ "enabled": { "type": "bool", "default": true, "description": "启用她自己的天堂" }, "panel_only": { "type": "text", "default": "", "description": "其余开关（状态感知/问题预算/留体面/话头/语气簿/停顿）在面板的「设置」页调，存在插件自己的 settings.json。" } }

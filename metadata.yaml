@@ -1,0 +1,22 @@
+name: astrbot_plugin_paradise
+display_name: 她自己的天堂
+short_desc: 把温柔拆成能做的事
+desc: >
+  她自己的天堂。温柔不是一句形容词，是几件能做出来的事：
+  从他话里认出累 / 忙 / 难过 / 不舒服，提前一步；不连着抛问题；
+  他说错的小事不纠正；收场之前留半句（话头）；记住他那天说话的语气；回复前稍稍慢一点。
+  全部按 QQ 分开存，不读任何其它插件的数据；注入走临时内容块，不改 system_prompt。
+version: 0.1.0
+author: 若剑清
+repo: ""
+tags:
+  - companion
+  - gentleness
+  - emotion
+  - behavior
+help: |
+  面板：插件管理 → 她自己的天堂 → 概览 / 设置
+  概览里能看到"他此刻累不累""近期问了几个问号""挂着的话头""语气簿"。
+pages:
+  - name: paradise-panel
+    title: 天堂
